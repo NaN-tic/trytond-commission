@@ -32,6 +32,13 @@ class Invoice:
         cls.create_commissions(invoices)
 
     @classmethod
+    @ModelView.button
+    @Workflow.transition('posted')
+    def post(cls, invoices):
+        super(Invoice, cls).post(invoices)
+        cls.post_commission_waiting_moves(invoices)
+
+    @classmethod
     def create_commissions(cls, invoices):
         pool = Pool()
         Commission = pool.get('commission')
@@ -100,6 +107,21 @@ class Invoice:
         values = super(Invoice, self)._credit()
         values['agent'] = self.agent.id if self.agent else None
         return values
+
+    @classmethod
+    def post_commission_waiting_moves(cls, invoices):
+        pool = Pool()
+        Move = pool.get('account.move')
+
+        moves = []
+        for invoice in invoices:
+            for line in invoice.lines:
+                for commission in line.from_commissions:
+                    if (commission.waiting_move
+                            and commission.waiting_move.state != 'posted'):
+                        moves.append(commission.waiting_move)
+        if moves:
+            Move.post(moves)
 
 
 class InvoiceLine:
