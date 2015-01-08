@@ -30,12 +30,6 @@ class Invoice:
     def post(cls, invoices):
         super(Invoice, cls).post(invoices)
         cls.create_commissions(invoices)
-
-    @classmethod
-    @ModelView.button
-    @Workflow.transition('posted')
-    def post(cls, invoices):
-        super(Invoice, cls).post(invoices)
         cls.post_commission_waiting_moves(invoices)
 
     @classmethod
