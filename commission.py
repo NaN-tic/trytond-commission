@@ -269,6 +269,12 @@ class Commission(ModelSQL, ModelView):
                 'principal': 'in',
                 }.get(self.agent.type_)
 
+    @fields.depends('agent')
+    def on_change_with_product(self):
+        if (self.agent and self.agent.plan
+                and self.agent.plan.commission_product):
+            return self.agent.plan.commission_product.id
+
     def get_invoice_state(self, name):
         state = ''
         if self.invoice_line:
