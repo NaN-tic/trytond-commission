@@ -325,7 +325,6 @@ class Commission(ModelSQL, ModelView):
         if to_write:
             cls.write(*to_write)
         Invoice.update_taxes(invoices)
-        return invoices
 
     def _group_to_invoice_key(self):
         direction = {
