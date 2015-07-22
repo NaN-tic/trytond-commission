@@ -460,10 +460,11 @@ class CreateInvoice(Wizard):
         Commission = pool.get('commission')
         commissions = Commission.search(self.get_domain(),
             order=[('agent', 'DESC'), ('date', 'DESC')])
-        invoices = Commission.invoice(commissions)
+        Commission.invoice(commissions)
+        invoice_ids = list({c.invoice_line.invoice.id for c in commissions})
         encoder = PYSONEncoder()
         action['pyson_domain'] = encoder.encode(
-            [('id', 'in', [i.id for i in invoices])])
+            [('id', 'in', [invoice_ids])])
         action['pyson_search_value'] = encoder.encode([])
         return action, {}
 
