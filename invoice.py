@@ -42,7 +42,8 @@ class Invoice:
                 if commissions:
                     all_commissions.extend(commissions)
 
-        return Commission.create([c._save_values for c in all_commissions])
+        with Transaction().set_context(_check_access=False):
+            return Commission.create([c._save_values for c in all_commissions])
 
     @classmethod
     @Workflow.transition('paid')
@@ -61,9 +62,10 @@ class Invoice:
                     ('date', '=', None),
                     ('origin.invoice', 'in', ids, 'account.invoice.line'),
                     ])
-            Commission.write(commissions, {
-                    'date': today,
-                    })
+            with Transaction().set_context(_check_access=False):
+                Commission.write(commissions, {
+                        'date': today,
+                        })
 
     @classmethod
     @ModelView.button
