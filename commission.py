@@ -118,6 +118,7 @@ class Plan(ModelSQL, ModelView):
     commission_method = fields.Selection([
             ('posting', 'On Posting'),
             ('payment', 'On Payment'),
+            ('invoice_date', 'On Invoice Date'),
             ], 'Commission Method',
         help='When the commission is due')
     lines = fields.One2Many('commission.plan.line', 'plan', 'Lines')

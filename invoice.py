@@ -168,6 +168,9 @@ class InvoiceLine:
             commission.origin = self
             if plan.commission_method == 'posting':
                 commission.date = today
+            if plan.commission_method == 'invoice_date':
+                commission.date = self.invoice and self.invoice.invoice_date \
+                    or today
             commission.agent = agent
             commission.product = plan.commission_product
             commission.amount = amount
